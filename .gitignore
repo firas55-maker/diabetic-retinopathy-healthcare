@@ -1,0 +1,50 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Node / frontend
+node_modules/
+.next/
+dist/
+build/
+
+# ML / large files
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Claude Code
+.claude/
+CLAUDE.md
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local database and runtime files
+backend/healthcare.db
+backend/server.log
+backend/uploads/
+
+# Large datasets
+data/
+**/data/
+
+# Keep dataset documentation while ignoring dataset files
+!CS502-diabetic-retinopathy-detection/data/
+!CS502-diabetic-retinopathy-detection/data/README.md
