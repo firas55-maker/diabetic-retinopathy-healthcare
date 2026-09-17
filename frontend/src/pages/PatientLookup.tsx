@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChatContext } from '../App';
+import { EducationalChatWidget } from '../components/EducationalChatWidget';
 import api from '../services/api';
 import './PatientLookup.css';
 
@@ -8,7 +10,9 @@ export const PatientLookup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [patientData, setPatientData] = useState<any>(null);
+  const [showChat, setShowChat] = useState(false);
   const navigate = useNavigate();
+  const { setIsChatOpen } = useContext(ChatContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,6 +125,34 @@ export const PatientLookup: React.FC = () => {
             ) : (
               <div className="alert alert-info">No scans found for this patient.</div>
             )}
+
+            {/* Educational Chat Widget - Inline on Patient Results */}
+            <div style={{ marginTop: 'var(--spacing-8)' }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 'var(--spacing-4)',
+              }}>
+                <h2>📚 Learn About Your Condition</h2>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setShowChat(!showChat)}
+                >
+                  {showChat ? '▼ Close' : '▶ Open Assistant'}
+                </button>
+              </div>
+              {showChat && (
+                <div style={{
+                  border: '1px solid var(--color-gray-200)',
+                  borderRadius: 'var(--radius-lg)',
+                  overflow: 'hidden',
+                  maxHeight: '500px',
+                }}>
+                  <EducationalChatWidget />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

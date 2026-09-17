@@ -6,6 +6,7 @@ from routes.auth import router as auth_router
 from routes.patients import router as patients_router, scans_router, lookup_router
 from routes.doctor import router as doctor_router
 from routes.dashboard import router as dashboard_router
+from routes.chat import router as chat_router
 from config import settings
 
 # Create tables (deferred to startup to handle missing DB gracefully)
@@ -44,6 +45,7 @@ app.include_router(scans_router)
 app.include_router(lookup_router)
 app.include_router(doctor_router)
 app.include_router(dashboard_router)
+app.include_router(chat_router)
 
 @app.get("/", tags=["Health"])
 async def root():

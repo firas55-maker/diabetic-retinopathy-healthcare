@@ -22,4 +22,7 @@ class Settings:
     APP_NAME: str = 'Healthcare API'
     APP_VERSION: str = '1.0.0'
 
+    # Gemini API (for educational chat assistant)
+    GEMINI_API_KEY: str = os.getenv('GEMINI_API_KEY', '')
+
 settings = Settings()

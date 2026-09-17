@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppShell } from '../../components/AppShell';
+import { EducationalChatWidget } from '../../components/EducationalChatWidget';
 import api from '../../services/api';
 
 export const PatientPortal: React.FC = () => {
@@ -7,6 +8,7 @@ export const PatientPortal: React.FC = () => {
   const [scans, setScans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     fetchPatientData();
@@ -289,6 +291,43 @@ export const PatientPortal: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* EDUCATIONAL ASSISTANT */}
+      <div className="card" style={{ marginBottom: 'var(--spacing-8)' }}>
+        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3>📚 Educational Assistant</h3>
+          <button
+            onClick={() => setShowChat(!showChat)}
+            style={{
+              padding: 'var(--spacing-2) var(--spacing-3)',
+              background: showChat ? 'var(--color-primary)' : 'var(--color-gray-200)',
+              color: showChat ? 'white' : 'var(--color-gray-900)',
+              border: 'none',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+              fontSize: 'var(--font-size-sm)',
+              fontWeight: 600,
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 107, 179, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            {showChat ? '▼ Close' : '▶ Open'}
+          </button>
+        </div>
+
+        {showChat && (
+          <div className="card-body" style={{ padding: 0 }}>
+            <EducationalChatWidget />
+          </div>
+        )}
       </div>
     </AppShell>
   );

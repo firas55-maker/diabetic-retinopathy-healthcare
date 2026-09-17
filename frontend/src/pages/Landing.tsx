@@ -1,9 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChatContext } from '../App';
 import './Landing.css';
 
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
+  const { setIsChatOpen } = useContext(ChatContext);
   const [isHeroVisible, setIsHeroVisible] = useState(false);
   const [visibleCards, setVisibleCards] = useState<{ [key: string]: boolean }>({});
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -52,7 +54,10 @@ export const Landing: React.FC = () => {
           <ul className="navbar-links">
             <li><a href="#about">About</a></li>
             <li><a href="#features">Features</a></li>
-            <li><a href="#education">Education</a></li>
+            <li><a href="#education" onClick={(e) => {
+              e.preventDefault();
+              setIsChatOpen(true);
+            }}>Education</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
           <div className="navbar-buttons">
@@ -66,11 +71,11 @@ export const Landing: React.FC = () => {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+     {/* HERO SECTION */}
       <section className={`hero ${isHeroVisible ? 'hero-visible' : ''}`}>
         <div className="hero-content">
           <h1 className="hero-title">Advancing Retinal Screening Through AI</h1>
-          <p className="hero-subtitle">
+          <p className="hero-subtitle" style={{ color: '#0F172A', fontWeight: 500 }}>
             Bringing cutting-edge computer vision technology to diabetic retinopathy detection,
             enabling early intervention and preventing vision loss in underserved communities.
           </p>
@@ -89,6 +94,8 @@ export const Landing: React.FC = () => {
             className={`card card-interactive value-card ${visibleCards['value-1'] ? 'card-visible' : ''}`}
             data-section-id="value-1"
             ref={(el) => setRef('value-1', el)}
+            onClick={() => setIsChatOpen(true)}
+            style={{ cursor: 'pointer' }}
           >
             <div className="value-card-icon">🤖</div>
             <h3>AI-Assisted Screening</h3>
@@ -244,3 +251,4 @@ export const Landing: React.FC = () => {
     </div>
   );
 };
+

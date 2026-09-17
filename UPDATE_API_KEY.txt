@@ -1,0 +1,47 @@
+INSTRUCTIONS TO SET YOUR GEMINI API KEY
+========================================
+
+Step 1: Get Your Free API Key
+-----------------------------
+1. Open this link in your browser: https://aistudio.google.com/app/apikey
+2. Sign in with your Google account (create one if needed)
+3. Click "Create API key"
+4. Select "Create API key in new project"
+5. Your API key will appear - it looks like: AIzaSyD_1234567890abcdefghijklmnop
+
+Step 2: Copy the Key
+-------------------
+Your key starts with "AIzaSy" and is a long string of characters.
+Copy the ENTIRE key to your clipboard.
+
+Step 3: Update .env File
+-----------------------
+1. Open this file: C:\Users\LENOVO\Desktop\helathcare 2\.env
+2. Find this line: GEMINI_API_KEY=your_actual_gemini_api_key_here
+3. Replace "your_actual_gemini_api_key_here" with your real key
+4. SAVE the file
+
+Example (DON'T use this - get your own):
+  GEMINI_API_KEY=AIzaSyD_1234567890abcdefghijklmnop
+
+Step 4: Restart Backend
+------------------------
+In your backend terminal (where uvicorn is running):
+1. Press Ctrl+C to stop it
+2. Run: python -m uvicorn main:app --reload
+3. Wait for "Application startup complete"
+
+Step 5: Test in Chat
+---------------------
+1. Go to http://localhost:3000
+2. Click "Education" in navbar
+3. Type: "What is diabetes?"
+4. You should get a response!
+
+THAT'S IT! 🚀
+
+If you still get errors:
+- Make sure you copied the ENTIRE key (no extra spaces)
+- Make sure you saved the .env file
+- Make sure you restarted the backend
+- Check that your key starts with "AIzaSy"
