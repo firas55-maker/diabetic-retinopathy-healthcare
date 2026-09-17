@@ -1,7 +1,7 @@
 from database import Base
 from enum import Enum
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, DateTime, Date, Enum as SQLEnum, ForeignKey, UniqueConstraint, Integer, Float
+from sqlalchemy import Column, String, DateTime, Date, Enum as SQLEnum, ForeignKey, UniqueConstraint, Integer, Float, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
@@ -48,7 +48,7 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String(255), nullable=False, unique=True)
-    hashed_password = Column(String(255), nullable=False)
+    hashed_password = Column(Text, nullable=False)  # Use Text to avoid truncation of bcrypt hashes
     full_name = Column(String(255), nullable=False)
     role = Column(SQLEnum(RoleEnum), nullable=False)
     hospital_id = Column(UUID(as_uuid=True), ForeignKey('hospitals.id'), nullable=False)

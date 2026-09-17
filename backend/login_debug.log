@@ -1,0 +1,13 @@
+
+=== LOGIN DEBUG ===
+Email received: doctor@hospital.com
+User found: True
+User email in DB: doctor@hospital.com
+User hash (first 40 chars): $2b$12$bHYEVYmOU2C/ZZZQkyAXyu3OqVxgMjUFn
+Hash length: 60
+verify_password() returned: False
+request.password: 'password123'
+request.password type: str
+request.password repr: 'password123'
+request.password hex bytes: 70617373776f7264313233
+

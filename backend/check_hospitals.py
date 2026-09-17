@@ -1,35 +1,40 @@
-from database import SessionLocal
-from models import Hospital, User
+#!/usr/bin/env python3
+"""
+Query the database to find existing hospitals
+"""
+import sys
+sys.path.insert(0, 'C:\\Users\\LENOVO\\Desktop\\helathcare 2\\backend')
 
-db = SessionLocal()
+from sqlalchemy import text
+from database import engine
 
-# Check hospitals
-print("=== HOSPITALS TABLE ===")
-hospitals = db.query(Hospital).all()
-if hospitals:
-    for h in hospitals:
-        print(f"  ID: {h.id}")
-        print(f"  Name: {h.name}")
-else:
-    print("  (empty)")
+try:
+    with engine.begin() as conn:
+        result = conn.execute(text("SELECT id, name, region, city FROM hospitals LIMIT 10"))
+        hospitals = result.fetchall()
 
-# Check the hospital_id from the user's example request
-test_hospital_id = "550e8400-e29b-41d4-a716-446655440000"
-print(f"\n=== CHECKING TEST HOSPITAL ID ===")
-print(f"Looking for: {test_hospital_id}")
+        if hospitals:
+            print("Existing hospitals:")
+            print("="*80)
+            for hospital_id, name, region, city in hospitals:
+                print(f"ID: {hospital_id}")
+                print(f"   Name: {name}")
+                print(f"   Region: {region}")
+                print(f"   City: {city}\n")
+        else:
+            print("No hospitals found in database")
+            print("\nYou need to create a hospital first. Here's a sample:")
+            print("""
+curl -X POST http://localhost:8000/hospitals \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "Central Medical Hospital",
+    "region": "North Region",
+    "city": "New York"
+  }'
+            """)
 
-exists = db.query(Hospital).filter(Hospital.id == test_hospital_id).first()
-if exists:
-    print(f"✓ Found: {exists.name}")
-else:
-    print(f"✗ NOT FOUND")
-
-# Check users and their hospital_ids
-print("\n=== USERS AND THEIR HOSPITAL_IDS ===")
-users = db.query(User).all()
-for u in users:
-    hospital = db.query(Hospital).filter(Hospital.id == u.hospital_id).first()
-    hospital_name = hospital.name if hospital else "MISSING HOSPITAL"
-    print(f"  {u.email} -> {u.hospital_id} ({hospital_name})")
-
-db.close()
+except Exception as e:
+    print(f"Error: {e}")
+    import traceback
+    traceback.print_exc()
