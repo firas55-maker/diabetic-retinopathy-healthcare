@@ -39,7 +39,7 @@ Download the dataset from its original Kaggle repository:
 
 **Eyepacs, Aptos, Messidor Diabetic Retinopathy**
 
-[Download dataset from Kaggle](https://www.kaggle.com/datasets/ascanipek/eyepacs-aptos-messidor-diabetic-retinopathy?utm_source=chatgpt.com)
+[Download dataset from Kaggle](https://www.kaggle.com/datasets/ascanipek/eyepacs-aptos-messidor-diabetic-retinopathy/data)
 
 You may need to sign in to Kaggle before downloading.
 
