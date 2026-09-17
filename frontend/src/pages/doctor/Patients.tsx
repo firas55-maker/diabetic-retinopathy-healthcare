@@ -32,6 +32,41 @@ export const DoctorPatients: React.FC = () => {
     p.patient_code?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const calculateAge = (dateOfBirth: string) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'reviewed':
+        return 'reviewed';
+      case 'pending_review':
+        return 'pending';
+      case 'pending':
+      default:
+        return 'pending';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'reviewed':
+        return '✓ Reviewed';
+      case 'pending_review':
+        return '⏳ Pending Review';
+      case 'pending':
+      default:
+        return '⏳ Pending';
+    }
+  };
+
   if (loading) {
     return (
       <AppShell>
@@ -93,12 +128,12 @@ export const DoctorPatients: React.FC = () => {
                 <tr key={patient.id}>
                   <td><strong>{patient.full_name}</strong></td>
                   <td><code style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-600)' }}>{patient.patient_code}</code></td>
-                  <td>{patient.age || '-'}</td>
-                  <td>{patient.scan_count || 0}</td>
-                  <td>{patient.latest_scan_date ? new Date(patient.latest_scan_date).toLocaleDateString() : '-'}</td>
+                  <td>{calculateAge(patient.date_of_birth)} years</td>
+                  <td>{patient.scans_count || 0}</td>
+                  <td>{patient.last_scan ? new Date(patient.last_scan).toLocaleDateString() : '-'}</td>
                   <td>
-                    <span className={`status-badge ${patient.latest_ai_grade ? 'reviewed' : 'pending'}`}>
-                      {patient.latest_ai_grade ? '✓ Reviewed' : '⏳ Pending'}
+                    <span className={`status-badge ${getStatusBadgeClass(patient.status)}`}>
+                      {getStatusLabel(patient.status)}
                     </span>
                   </td>
                   <td>

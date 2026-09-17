@@ -130,6 +130,7 @@ async def list_patients(
 
     Returns list of patients accessible to the authenticated user,
     filtered by their hospital. Supports pagination with skip/limit.
+    Includes dynamic scan metrics for each patient.
 
     - **skip**: Number of records to skip (default 0)
     - **limit**: Maximum records to return (default 50, max 200)
@@ -140,9 +141,30 @@ async def list_patients(
         Patient.hospital_id == current_user.hospital_id
     ).order_by(Patient.created_at.desc()).offset(skip).limit(limit).all()
 
-    # Convert date_of_birth to string for response schema
+    # Convert date_of_birth to string for response schema and calculate scan metrics
     patient_responses = []
     for p in patients:
+        # Get all scans for this patient
+        scans = db.query(Scan).filter(
+            Scan.patient_id == p.id
+        ).order_by(Scan.created_at.desc()).all()
+
+        # Calculate scan metrics
+        scans_count = len(scans)
+        last_scan = scans[0].created_at if scans else None
+
+        # Determine patient status based on scan records
+        # - If any scan has a doctor_grade or status is reviewed, status = "reviewed"
+        # - If scans exist but none are reviewed, status = "pending_review"
+        # - If no scans, status = "pending"
+        status = "pending"
+        if scans_count > 0:
+            has_reviewed = any(
+                scan.doctor_grade is not None or scan.status == ScanStatusEnum.REVIEWED
+                for scan in scans
+            )
+            status = "reviewed" if has_reviewed else "pending_review"
+
         patient_responses.append(PatientResponse(
             id=p.id,
             patient_code=p.patient_code,
@@ -151,6 +173,9 @@ async def list_patients(
             sex=p.sex,
             phone_number=p.phone_number,
             hospital_id=p.hospital_id,
+            scans_count=scans_count,
+            last_scan=last_scan,
+            status=status,
             created_at=p.created_at,
             updated_at=p.updated_at
         ))

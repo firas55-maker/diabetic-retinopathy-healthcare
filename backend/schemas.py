@@ -112,14 +112,17 @@ class PatientCreateRequest(BaseModel):
         }
 
 class PatientResponse(BaseModel):
-    """Patient response model"""
+    """Patient response model with scan aggregation"""
     id: UUID
     patient_code: str
     full_name: str
     date_of_birth: str
     sex: str
-    phone_number: str
+    phone_number: Optional[str] = None
     hospital_id: UUID
+    scans_count: int = 0
+    last_scan: Optional[datetime] = None
+    status: str = "pending"
     created_at: datetime
     updated_at: datetime
 
@@ -134,6 +137,9 @@ class PatientResponse(BaseModel):
                 "sex": "female",
                 "phone_number": "12345678",
                 "hospital_id": "550e8400-e29b-41d4-a716-446655440001",
+                "scans_count": 3,
+                "last_scan": "2026-09-16T14:30:00",
+                "status": "reviewed",
                 "created_at": "2026-09-16T10:00:00",
                 "updated_at": "2026-09-16T10:00:00"
             }

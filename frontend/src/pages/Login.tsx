@@ -86,8 +86,8 @@ export const Login: React.FC = () => {
 
         <div className="login-info">
           <h3>Demo Credentials</h3>
-          <p><strong>Doctor:</strong> doctor@hospital.com / password</p>
-          <p><strong>Staff:</strong> staff@hospital.com / password</p>
+          <p><strong>Doctor:</strong> doctor@hospital.com / password123</p>
+          <p><strong>Technician:</strong> tech@hospital.com / password123</p>
           <p><strong>Patient:</strong> Use PAT-YYYYMMDD-NNNN format for lookup</p>
         </div>
       </div>

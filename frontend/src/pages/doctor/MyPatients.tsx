@@ -58,15 +58,13 @@ export const MyPatients: React.FC = () => {
                     <td>{patient.patient_code}</td>
                     <td>{patient.full_name}</td>
                     <td>{patient.date_of_birth}</td>
-                    <td>{patient.scan_count}</td>
-                    <td>{patient.latest_scan_date ? new Date(patient.latest_scan_date).toLocaleDateString() : 'N/A'}</td>
+                    <td>{patient.scans_count || 0}</td>
+                    <td>{patient.last_scan ? new Date(patient.last_scan).toLocaleDateString() : 'N/A'}</td>
                     <td>
-                      {patient.latest_doctor_grade !== null ? (
-                        <span className={`badge badge-${['success', 'warning', 'danger', 'danger'][patient.latest_doctor_grade] || 'info'}`}>
-                          Grade {patient.latest_doctor_grade}
-                        </span>
+                      {patient.status === 'reviewed' ? (
+                        <span className="badge badge-success">✓ Reviewed</span>
                       ) : (
-                        <span className="badge badge-info">Pending</span>
+                        <span className="badge badge-warning">⏳ Pending</span>
                       )}
                     </td>
                   </tr>

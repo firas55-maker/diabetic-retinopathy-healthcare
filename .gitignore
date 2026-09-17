@@ -58,3 +58,6 @@ test4.jpg
 test5.png
 test6.png
 test7.png
+
+# Frontend runtime logs
+frontend/frontend.log

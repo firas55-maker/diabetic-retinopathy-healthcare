@@ -87,7 +87,6 @@ export interface DashboardStats {
 
 class ApiClient {
   private client: AxiosInstance;
-  private token: string | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -97,20 +96,21 @@ class ApiClient {
       },
     });
 
-    this.token = localStorage.getItem('token');
-    this.updateAuthHeader();
+    // Add interceptor to dynamically attach token from localStorage to each request
+    this.client.interceptors.request.use((config) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
   }
 
   setToken(token: string | null) {
-    this.token = token;
-    this.updateAuthHeader();
-  }
-
-  private updateAuthHeader() {
-    if (this.token) {
-      this.client.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+    if (token) {
+      localStorage.setItem('token', token);
     } else {
-      delete this.client.defaults.headers.common['Authorization'];
+      localStorage.removeItem('token');
     }
   }
 
