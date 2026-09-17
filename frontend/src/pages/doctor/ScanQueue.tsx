@@ -3,6 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../../components/AppShell';
 import api from '../../services/api';
 
+const formatScanDate = (dateString: string | undefined): string => {
+  if (!dateString) return 'Invalid Date';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  } catch (e) {
+    return 'Invalid Date';
+  }
+};
+
 export const ScanQueue: React.FC = () => {
   const navigate = useNavigate();
   const [scans, setScans] = useState<any[]>([]);
@@ -116,7 +133,7 @@ export const ScanQueue: React.FC = () => {
                 }}>
                   <td><strong>{scan.patient_name || 'Unknown'}</strong></td>
                   <td><code style={{ fontSize: 'var(--font-size-xs)' }}>{scan.patient_code}</code></td>
-                  <td>{new Date(scan.created_at).toLocaleDateString()}</td>
+                  <td>{formatScanDate(scan.created_at)}</td>
                   <td>
                     <span style={{
                       display: 'inline-block',

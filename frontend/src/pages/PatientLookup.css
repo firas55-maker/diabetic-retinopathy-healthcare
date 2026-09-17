@@ -1,94 +1,198 @@
-/* Patient Lookup Page */
-.lookup-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+/* ============================================
+   PATIENT LOOKUP PAGE STYLES
+   Professional Navy/Gold Theme
+   ============================================ */
+
+.lookup-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-  padding-top: 40px;
+  background-color: var(--color-gray-50);
+  display: flex;
+  flex-direction: column;
 }
 
-.lookup-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-width: 600px;
-  width: 100%;
-  overflow: hidden;
+/* NAVBAR */
+.lookup-navbar {
+  background-color: var(--color-navy);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-4) var(--spacing-6);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
 }
 
-.lookup-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 40px 30px;
-  text-align: center;
+.lookup-navbar-content {
+  max-width: var(--max-content-width);
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.lookup-header h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
+.logo {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-invert);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+}
+
+/* CONTAINER */
+.lookup-container {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8) var(--spacing-4);
 }
 
-.lookup-header p {
+.lookup-card {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* HEADER */
+.lookup-header {
+  padding: var(--spacing-8);
+  border-bottom: 1px solid var(--color-gray-200);
+  background-color: var(--color-gray-50);
+}
+
+.lookup-header h1 {
+  font-size: var(--font-size-3xl);
+  color: var(--color-navy);
+  margin-bottom: var(--spacing-3);
+}
+
+.lookup-subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
   margin: 0;
-  opacity: 0.9;
-  font-size: 14px;
 }
 
+/* FORM */
 .lookup-form {
-  padding: 40px 30px;
+  padding: var(--spacing-8);
 }
 
-.form-description {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 30px;
-  line-height: 1.6;
+.form-group {
+  margin-bottom: var(--spacing-6);
 }
 
-.lookup-form .form-group small {
+.form-group:last-of-type {
+  margin-bottom: var(--spacing-8);
+}
+
+.form-group label {
   display: block;
-  margin-top: 4px;
-  font-size: 12px;
-  color: #999;
+  margin-bottom: var(--spacing-2);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-navy);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.lookup-footer {
-  background: #f5f5f5;
-  padding: 20px 30px;
-  border-top: 1px solid #e0e0e0;
+.form-group input {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  transition: all var(--transition-base);
+  background-color: var(--color-white);
 }
 
-.footer-section h3 {
-  margin: 0 0 10px 0;
-  font-size: 16px;
-  color: #2c3e50;
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(201, 151, 58, 0.1);
 }
 
-.footer-section p {
-  margin: 0 0 15px 0;
-  font-size: 14px;
-  color: #666;
-  line-height: 1.6;
+.form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
+.form-group small {
+  display: block;
+  margin-top: var(--spacing-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+}
+
+/* DIVIDER */
+.lookup-divider {
+  padding: var(--spacing-4) var(--spacing-8);
+  text-align: center;
+  color: var(--color-text-light);
+  position: relative;
+  margin: var(--spacing-4) 0;
+}
+
+.lookup-divider::before,
+.lookup-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background-color: var(--color-gray-300);
+}
+
+.lookup-divider::before {
+  left: 0;
+}
+
+.lookup-divider::after {
+  right: 0;
+}
+
+.lookup-divider span {
+  position: relative;
+  background-color: var(--color-white);
+  padding: 0 var(--spacing-3);
+}
+
+/* PROVIDER SECTION */
+.lookup-provider-section {
+  padding: var(--spacing-8);
+  background-color: var(--color-gray-50);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.lookup-provider-section h3 {
+  color: var(--color-navy);
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-lg);
+}
+
+.lookup-provider-section p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-6);
+  line-height: var(--line-height-relaxed);
+}
+
+/* PATIENT INFO */
 .patient-info {
-  padding: 40px 30px;
-  background: #f9f9f9;
-  border-bottom: 1px solid #e0e0e0;
+  padding: var(--spacing-8);
+  border-bottom: 1px solid var(--color-gray-200);
+  background-color: var(--color-white);
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  padding: var(--spacing-3) 0;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .info-row:last-child {
@@ -96,123 +200,182 @@
 }
 
 .info-row .label {
-  font-weight: 600;
-  color: #2c3e50;
-  min-width: 150px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-navy);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .info-row .value {
-  color: #666;
-  text-align: right;
-  flex: 1;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
+/* SCANS LIST */
 .scans-list {
-  padding: 30px;
+  padding: var(--spacing-8);
 }
 
 .scans-list h2 {
-  margin: 0 0 20px 0;
-  color: #2c3e50;
-  font-size: 20px;
+  color: var(--color-navy);
+  margin-bottom: var(--spacing-6);
+  font-size: var(--font-size-2xl);
 }
 
 .scan-item {
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-6);
+  transition: all var(--transition-base);
+}
+
+.scan-item:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .scan-date {
-  font-weight: 700;
-  color: #667eea;
-  font-size: 16px;
-  margin-bottom: 15px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-navy);
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 2px solid var(--color-gold);
 }
 
 .scan-details {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--spacing-3);
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
+  gap: var(--spacing-4);
 }
 
 .detail-row .label {
-  font-weight: 600;
-  color: #2c3e50;
-  min-width: 150px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-navy);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 0 0 auto;
 }
 
-.detail-row .value,
-.detail-row .grade,
-.detail-row .status,
-.detail-row .notes {
+.detail-row .value {
+  color: var(--color-text-secondary);
   flex: 1;
-  text-align: right;
 }
 
 .grade {
   display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--color-white);
 }
 
-.grade-0,
+.grade-0 {
+  background-color: var(--severity-none);
+}
+
 .grade-1 {
-  background: #d4edda;
-  color: #155724;
+  background-color: var(--severity-mild);
+  color: var(--color-text-primary);
 }
 
 .grade-2 {
-  background: #fff3cd;
-  color: #856404;
+  background-color: var(--severity-moderate);
 }
 
-.grade-3,
+.grade-3 {
+  background-color: var(--severity-severe);
+}
+
 .grade-4 {
-  background: #f8d7da;
-  color: #721c24;
+  background-color: var(--severity-proliferative);
+}
+
+.notes {
+  display: block;
+  padding: var(--spacing-3);
+  background-color: var(--color-gray-50);
+  border-left: 3px solid var(--color-gold);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  font-style: italic;
 }
 
 .status {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.status-pending_review {
-  background: #fff3cd;
-  color: #856404;
+.status-PENDING_REVIEW {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
 }
 
-.status-reviewed {
-  background: #d4edda;
-  color: #155724;
+.status-REVIEWED {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
 }
 
-.notes {
-  font-style: italic;
-  color: #666;
-  line-height: 1.6;
+.status-FAILED {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
 }
 
-@media (max-width: 768px) {
-  .lookup-header {
-    flex-direction: column;
-    text-align: center;
+/* ALERTS */
+.alert {
+  padding: var(--spacing-4) var(--spacing-6);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid;
+  margin-bottom: var(--spacing-6);
+}
+
+.alert-error {
+  background-color: var(--color-error-light);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.alert-info {
+  background-color: var(--color-info-light);
+  border-color: var(--color-info);
+  color: var(--color-info);
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .lookup-container {
+    padding: var(--spacing-4) var(--spacing-2);
+  }
+
+  .lookup-card {
+    border-radius: var(--radius-lg);
+  }
+
+  .lookup-header,
+  .lookup-form,
+  .patient-info,
+  .scans-list,
+  .lookup-provider-section {
+    padding: var(--spacing-6);
+  }
+
+  .lookup-header h1 {
+    font-size: var(--font-size-2xl);
   }
 
   .detail-row {
@@ -220,10 +383,8 @@
     align-items: flex-start;
   }
 
-  .detail-row .value,
-  .detail-row .grade,
-  .detail-row .status,
-  .detail-row .notes {
-    text-align: left;
+  .lookup-navbar-content {
+    flex-direction: column;
+    gap: var(--spacing-3);
   }
 }

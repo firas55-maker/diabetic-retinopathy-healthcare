@@ -45,6 +45,16 @@ backend/uploads/
 data/
 **/data/
 
-# Keep dataset documentation while ignoring dataset files
+# Keep only dataset README
 !CS502-diabetic-retinopathy-detection/data/
+CS502-diabetic-retinopathy-detection/data/*
 !CS502-diabetic-retinopathy-detection/data/README.md
+
+# Local test images
+test1.jpeg
+test2.webp
+test3.jpg
+test4.jpg
+test5.png
+test6.png
+test7.png

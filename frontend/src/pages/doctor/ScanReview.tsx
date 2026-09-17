@@ -3,10 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AppShell } from '../../components/AppShell';
 import api from '../../services/api';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 export const ScanReview: React.FC = () => {
   const { scanId } = useParams();
   const navigate = useNavigate();
   const [scan, setScan] = useState<any>(null);
+  const [imageUrl, setImageUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [doctorGrade, setDoctorGrade] = useState<number | ''>('');
@@ -21,15 +24,16 @@ export const ScanReview: React.FC = () => {
   const fetchScan = async () => {
     try {
       setLoading(true);
-      // Since we don't have a specific getScan endpoint, we fetch all scans and find the one
-      const allScans = await api.getScanQueue();
-      const foundScan = allScans?.find((s: any) => s.id === scanId);
-      if (foundScan) {
-        setScan(foundScan);
+      // Fetch the specific scan detail with image data
+      const scanDetail = await api.getScanDetail(scanId!);
+      if (scanDetail) {
+        setScan(scanDetail);
         // Pre-fill with AI grade as suggestion
-        if (foundScan.ai_grade !== undefined && foundScan.ai_grade !== null) {
-          setDoctorGrade(foundScan.ai_grade);
+        if (scanDetail.ai_grade !== undefined && scanDetail.ai_grade !== null) {
+          setDoctorGrade(scanDetail.ai_grade);
         }
+        // Fetch the image
+        await fetchScanImage(scanId!);
       } else {
         setError('Scan not found');
       }
@@ -38,6 +42,26 @@ export const ScanReview: React.FC = () => {
       setError('Unable to load scan details');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchScanImage = async (scanId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/doctor/scans/${scanId}/image`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setImageUrl(url);
+      } else {
+        console.error('Failed to fetch image:', response.status);
+      }
+    } catch (err: any) {
+      console.error('Error fetching image:', err);
     }
   };
 
@@ -61,7 +85,35 @@ export const ScanReview: React.FC = () => {
       }, 2000);
     } catch (err: any) {
       console.error('Failed to submit review:', err);
-      setError(err.response?.data?.detail || 'Failed to submit review');
+
+      // Extract error message from response
+      let errorMessage = 'Failed to submit review';
+
+      if (err.response?.data) {
+        const data = err.response.data;
+
+        // Handle Pydantic validation errors (422)
+        if (Array.isArray(data.detail)) {
+          const errors = data.detail.map((e: any) => {
+            if (typeof e === 'object' && e.msg) {
+              const field = e.loc?.[1] || 'field';
+              return `${field}: ${e.msg}`;
+            }
+            return String(e);
+          });
+          errorMessage = errors.join('; ');
+        }
+        // Handle regular error detail
+        else if (typeof data.detail === 'string') {
+          errorMessage = data.detail;
+        }
+        // Handle object error detail
+        else if (typeof data.detail === 'object' && data.detail?.msg) {
+          errorMessage = data.detail.msg;
+        }
+      }
+
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -151,18 +203,33 @@ export const ScanReview: React.FC = () => {
               <h3>Retinal Scan Image</h3>
             </div>
             <div className="card-body">
-              <div style={{
-                backgroundColor: 'var(--color-gray-200)',
-                borderRadius: 'var(--radius-md)',
-                aspectRatio: '1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--color-gray-600)',
-                fontSize: 'var(--font-size-4xl)'
-              }}>
-                🖼️
-              </div>
+              {imageUrl ? (
+                <div style={{ position: 'relative' }}>
+                  <img
+                    src={imageUrl}
+                    alt="Retinal scan"
+                    style={{
+                      width: '100%',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'block',
+                      backgroundColor: 'var(--color-gray-100)'
+                    }}
+                  />
+                </div>
+              ) : (
+                <div style={{
+                  backgroundColor: 'var(--color-gray-200)',
+                  borderRadius: 'var(--radius-md)',
+                  aspectRatio: '1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--color-gray-600)',
+                  fontSize: 'var(--font-size-4xl)'
+                }}>
+                  ⚠️ Image not available
+                </div>
+              )}
               <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-600)', marginTop: 'var(--spacing-3)', marginBottom: 0 }}>
                 Uploaded: {new Date(scan.created_at).toLocaleString()}
               </p>

@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Query
+﻿from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, func
 from datetime import datetime, timezone
 from pathlib import Path
 import base64
+import os
 
 from models import Patient, Scan, User, ScanStatusEnum, RoleEnum
 from schemas import (
@@ -102,6 +104,75 @@ async def get_scan_queue(
 
     return ScanQueueListResponse(scans=queue_items, total=total)
 
+@router.get("/scans/{scan_id}/image")
+async def get_scan_image(
+    scan_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_doctor)
+):
+    """
+    Get scan image file (doctor only)
+
+    Returns the actual image file for direct display in the browser.
+    Authorization: doctor from same hospital or admin.
+    """
+
+    scan = db.query(Scan).filter(Scan.id == scan_id).first()
+
+    if not scan:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Scan not found"
+        )
+
+    # Check authorization: doctor from same hospital or admin
+    if current_user.role != RoleEnum.ADMIN and scan.patient.hospital_id != current_user.hospital_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only view scans from your hospital"
+        )
+
+    # Resolve file path: handle both relative and absolute paths
+    # file_path from DB might be relative (e.g., "uploads/scans/uuid.jpg")
+    # Convert to absolute path if it's relative
+    file_path = Path(scan.file_path)
+    if not file_path.is_absolute():
+        # Resolve relative to the backend directory
+        backend_dir = Path(__file__).parent.parent
+        file_path = backend_dir / file_path
+
+    if not file_path.exists():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image file not found on disk"
+        )
+
+    # Determine media type from file extension
+    suffix = file_path.suffix.lower()
+    media_type_map = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.webp': 'image/webp'
+    }
+    media_type = media_type_map.get(suffix, 'image/jpeg')
+
+    # DEBUG: Print the exact path being opened
+    print(f"\n{'='*80}")
+    print(f"[SCAN IMAGE ENDPOINT] Serving image for scan_id: {scan_id}")
+    print(f"  DB file_path value: {scan.file_path}")
+    print(f"  Resolved absolute:  {file_path}")
+    print(f"  File exists:        {file_path.exists()}")
+    print(f"  File size:          {file_path.stat().st_size if file_path.exists() else 'N/A'} bytes")
+    print(f"  Content-Type:       {media_type}")
+    print(f"{'='*80}\n")
+
+    return FileResponse(
+        path=file_path,
+        media_type=media_type,
+        filename=f"scan_{scan_id}{suffix}"
+    )
+
 @router.get("/scans/{scan_id}", response_model=ScanDetailResponse)
 async def get_scan_detail(
     scan_id: str,
@@ -133,11 +204,8 @@ async def get_scan_detail(
             detail="You can only view scans from your hospital"
         )
 
-    # Read image file
+    # Read image file as base64
     image_data = read_image_as_base64(scan.file_path)
-    if image_data is None:
-        # Include path even if image not found for debugging
-        image_data = None
 
     return ScanDetailResponse(
         id=scan.id,
@@ -149,6 +217,7 @@ async def get_scan_detail(
         region=scan.patient.hospital.region,
         city=scan.patient.hospital.city,
         file_path=scan.file_path,
+        image_data=image_data,
         ai_grade=scan.ai_grade,
         ai_severity=scan.ai_severity,
         ai_confidence=scan.ai_confidence,
@@ -291,3 +360,4 @@ async def get_my_patients(
         patient_responses.append(patient_resp)
 
     return DoctorPatientsResponse(patients=patient_responses, total=total)
+

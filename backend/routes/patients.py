@@ -105,6 +105,44 @@ async def create_patient(
         full_name=new_patient.full_name
     )
 
+@router.get("/", response_model=List[PatientResponse])
+async def list_patients(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+) -> List[PatientResponse]:
+    """
+    Get all patients from current user's hospital (paginated)
+
+    Returns list of patients accessible to the authenticated user,
+    filtered by their hospital. Supports pagination with skip/limit.
+
+    - **skip**: Number of records to skip (default 0)
+    - **limit**: Maximum records to return (default 50, max 200)
+    """
+
+    # Get all patients from the current user's hospital
+    patients = db.query(Patient).filter(
+        Patient.hospital_id == current_user.hospital_id
+    ).order_by(Patient.created_at.desc()).offset(skip).limit(limit).all()
+
+    # Convert date_of_birth to string for response schema
+    patient_responses = []
+    for p in patients:
+        patient_responses.append(PatientResponse(
+            id=p.id,
+            patient_code=p.patient_code,
+            full_name=p.full_name,
+            date_of_birth=str(p.date_of_birth),
+            sex=p.sex,
+            hospital_id=p.hospital_id,
+            created_at=p.created_at,
+            updated_at=p.updated_at
+        ))
+
+    return patient_responses
+
 @router.get("/{patient_code}", response_model=PatientResponse)
 async def get_patient(
     patient_code: str,

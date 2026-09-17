@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 
 // Pages
+import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
 import { DoctorDashboard } from './pages/doctor/Dashboard';
 import { DoctorPatients } from './pages/doctor/Patients';
@@ -32,6 +33,7 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
           <Route
             path="/login"
             element={
@@ -121,8 +123,7 @@ function App() {
           />
 
           {/* Catch-all */}
-          <Route path="/" element={<Navigate to="/patient-lookup" replace />} />
-          <Route path="*" element={<Navigate to="/patient-lookup" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </Router>

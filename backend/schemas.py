@@ -265,6 +265,7 @@ class ScanDetailResponse(BaseModel):
     region: str
     city: str
     file_path: str
+    image_data: Optional[str] = None
     ai_grade: int
     ai_severity: str
     ai_confidence: float
@@ -289,6 +290,7 @@ class ScanDetailResponse(BaseModel):
                 "region": "North Region",
                 "city": "New York",
                 "file_path": "/uploads/scans/550e8400-e29b-41d4-a716-446655440004.jpg",
+                "image_data": "base64_encoded_image_string_here",
                 "ai_grade": 2,
                 "ai_severity": "Moderate",
                 "ai_confidence": 0.8765,
@@ -305,7 +307,7 @@ class ScanDetailResponse(BaseModel):
 class ScanReviewRequest(BaseModel):
     """Doctor's scan review submission"""
     doctor_grade: int = Field(..., ge=0, le=4, description="0-4: No DR to Proliferative DR")
-    notes: str = Field(..., min_length=1, max_length=1000)
+    notes: str = Field(default="", max_length=1000, description="Optional clinical notes")
 
     class Config:
         json_schema_extra = {
