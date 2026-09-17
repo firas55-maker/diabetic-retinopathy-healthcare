@@ -99,13 +99,15 @@ class PatientCreateRequest(BaseModel):
     full_name: str = Field(..., min_length=1, max_length=255)
     date_of_birth: str = Field(..., description="Date in format YYYY-MM-DD")
     sex: str = Field(..., description="male, female, or other")
+    phone_number: str = Field(..., min_length=8, max_length=8, description="8-digit phone number")
 
     class Config:
         json_schema_extra = {
             "example": {
                 "full_name": "Jane Smith",
                 "date_of_birth": "1990-05-15",
-                "sex": "female"
+                "sex": "female",
+                "phone_number": "12345678"
             }
         }
 
@@ -116,6 +118,7 @@ class PatientResponse(BaseModel):
     full_name: str
     date_of_birth: str
     sex: str
+    phone_number: str
     hospital_id: UUID
     created_at: datetime
     updated_at: datetime
@@ -129,6 +132,7 @@ class PatientResponse(BaseModel):
                 "full_name": "Jane Smith",
                 "date_of_birth": "1990-05-15",
                 "sex": "female",
+                "phone_number": "12345678",
                 "hospital_id": "550e8400-e29b-41d4-a716-446655440001",
                 "created_at": "2026-09-16T10:00:00",
                 "updated_at": "2026-09-16T10:00:00"

@@ -70,6 +70,18 @@ async def create_patient(
             detail=f"Invalid sex. Must be one of: {', '.join(valid_sexes)}"
         )
 
+    # Validate phone_number (exactly 8 digits, numeric only)
+    if not request.phone_number.isdigit():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number must contain only digits"
+        )
+    if len(request.phone_number) != 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number must be exactly 8 digits"
+        )
+
     # Generate unique patient code
     # Get latest sequence number for today
     today = datetime.now().strftime("%Y%m%d")
@@ -92,6 +104,7 @@ async def create_patient(
         full_name=request.full_name,
         date_of_birth=dob,
         sex=request.sex.lower(),
+        phone_number=request.phone_number,
         hospital_id=current_user.hospital_id
     )
 
@@ -136,6 +149,7 @@ async def list_patients(
             full_name=p.full_name,
             date_of_birth=str(p.date_of_birth),
             sex=p.sex,
+            phone_number=p.phone_number,
             hospital_id=p.hospital_id,
             created_at=p.created_at,
             updated_at=p.updated_at
@@ -391,17 +405,15 @@ class PatientLookupResponse(BaseModel):
 @lookup_router.get("/{patient_code}", response_model=PatientLookupResponse, tags=["public"])
 async def patient_lookup(
     patient_code: str,
-    date_of_birth: str = Query(..., description="Patient's date of birth (YYYY-MM-DD) for verification"),
     db: Session = Depends(get_db)
 ) -> PatientLookupResponse:
     """
     Public patient lookup endpoint (no authentication required)
 
     Returns patient's own scan history with doctor assessments.
-    Requires date_of_birth as a verification parameter to prevent data leakage.
+    Lookup is by patient_code only.
 
     - **patient_code**: Patient's registration code (e.g., PAT-20260916-0001)
-    - **date_of_birth**: Patient's date of birth (YYYY-MM-DD) - required for verification
 
     Returns:
     - Patient demographics
@@ -412,15 +424,6 @@ async def patient_lookup(
       - Current status
       - Image file path
     """
-
-    # Parse and validate date of birth
-    try:
-        dob = datetime.strptime(date_of_birth, "%Y-%m-%d").date()
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid date format. Use YYYY-MM-DD"
-        )
 
     # Find patient by patient_code
     patient = db.query(Patient).filter(
@@ -433,20 +436,12 @@ async def patient_lookup(
             detail="Patient not found"
         )
 
-    # Verify date of birth for security
-    if patient.date_of_birth != dob:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Date of birth verification failed. Access denied."
-        )
-
-    # Get all scans for this patient
+    # Get all scans for this patient, ordered by most recent first
     scans = db.query(Scan).filter(
         Scan.patient_id == patient.id
     ).order_by(Scan.created_at.desc()).all()
 
-    # Build scan responses - only include reviewed scans or all scans?
-    # Returning all scans per request, but only including doctor_grade/notes if reviewed
+    # Build scan responses - only include doctor_grade/notes if reviewed
     scan_responses = []
     for scan in scans:
         scan_resp = PatientLookupScan(

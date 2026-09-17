@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
 import { AppShell } from '../../components/AppShell';
+import { PatientRegistrationConfirmation } from '../../components/PatientRegistrationConfirmation';
 import api from '../../services/api';
+
+interface RegistrationData {
+  patientCode: string;
+  fullName: string;
+  dateOfBirth: string;
+}
 
 export const RegisterPatient: React.FC = () => {
   const [formData, setFormData] = useState({
     full_name: '',
     date_of_birth: '',
     sex: 'male',
+    phone_number: '',
     hospital_id: '',
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState('');
+  const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -23,11 +30,16 @@ export const RegisterPatient: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccess(false);
-    setGeneratedCode('');
+    setRegistrationData(null);
 
-    if (!formData.full_name || !formData.date_of_birth || !formData.hospital_id) {
+    if (!formData.full_name || !formData.date_of_birth || !formData.phone_number || !formData.hospital_id) {
       setError('Please fill in all required fields');
+      return;
+    }
+
+    // Validate phone number (exactly 8 digits)
+    if (!/^\d{8}$/.test(formData.phone_number)) {
+      setError('Phone number must be exactly 8 digits');
       return;
     }
 
@@ -37,13 +49,17 @@ export const RegisterPatient: React.FC = () => {
         full_name: formData.full_name,
         date_of_birth: formData.date_of_birth,
         sex: formData.sex,
+        phone_number: formData.phone_number,
         hospital_id: formData.hospital_id,
       });
 
       if (response.patient_code) {
-        setGeneratedCode(response.patient_code);
-        setSuccess(true);
-        setFormData({ full_name: '', date_of_birth: '', sex: 'male', hospital_id: '' });
+        setRegistrationData({
+          patientCode: response.patient_code,
+          fullName: formData.full_name,
+          dateOfBirth: formData.date_of_birth,
+        });
+        setFormData({ full_name: '', date_of_birth: '', sex: 'male', phone_number: '', hospital_id: '' });
       }
     } catch (err: any) {
       console.error('Failed to register patient:', err);
@@ -53,42 +69,25 @@ export const RegisterPatient: React.FC = () => {
     }
   };
 
+  const handleConfirmationDismiss = () => {
+    setRegistrationData(null);
+  };
+
   return (
     <AppShell>
+      {registrationData && (
+        <PatientRegistrationConfirmation
+          data={registrationData}
+          onDismiss={handleConfirmationDismiss}
+        />
+      )}
+
       <div className="page-header">
         <h1 className="page-header-title">Register New Patient</h1>
         <p className="page-header-desc">Add a new patient to the screening database</p>
       </div>
 
       {error && <div className="alert alert-error" style={{ marginBottom: 'var(--spacing-6)' }}>{error}</div>}
-
-      {success && generatedCode && (
-        <div className="alert alert-success" style={{ marginBottom: 'var(--spacing-6)' }}>
-          <div style={{ marginBottom: 'var(--spacing-3)' }}>
-            <strong>✓ Patient registered successfully!</strong>
-          </div>
-          <div style={{ padding: 'var(--spacing-4)', backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 'var(--radius-md)' }}>
-            <p style={{ fontSize: 'var(--font-size-sm)', margin: '0 0 var(--spacing-2) 0', color: 'rgba(255, 255, 255, 0.8)' }}>Patient Code:</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-              <code style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'bold', flex: 1 }}>{generatedCode}</code>
-              <button
-                className="btn btn-sm"
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  navigator.clipboard.writeText(generatedCode);
-                }}
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="grid-2">
         <div className="card">
@@ -137,6 +136,25 @@ export const RegisterPatient: React.FC = () => {
                   <option value="female">Female</option>
                   <option value="other">Other</option>
                 </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: 'var(--spacing-2)', fontWeight: 500, fontSize: 'var(--font-size-sm)' }}>
+                  Phone Number *
+                </label>
+                <input
+                  type="text"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  placeholder="12345678"
+                  maxLength={8}
+                  pattern="\d{8}"
+                  required
+                />
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-600)', marginTop: 'var(--spacing-2)' }}>
+                  8-digit phone number (numbers only)
+                </p>
               </div>
 
               <div>

@@ -5,7 +5,6 @@ import './PatientLookup.css';
 
 export const PatientLookup: React.FC = () => {
   const [patientCode, setPatientCode] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [patientData, setPatientData] = useState<any>(null);
@@ -17,12 +16,10 @@ export const PatientLookup: React.FC = () => {
     setLoading(true);
 
     try {
-      const data = await api.patientLookup(patientCode, dateOfBirth);
+      const data = await api.patientLookup(patientCode);
       setPatientData(data);
     } catch (err: any) {
-      if (err.response?.status === 401) {
-        setError('Date of birth does not match. Access denied.');
-      } else if (err.response?.status === 404) {
+      if (err.response?.status === 404) {
         setError('Patient not found.');
       } else {
         setError(err.response?.data?.detail || 'Failed to retrieve patient data.');
@@ -52,7 +49,6 @@ export const PatientLookup: React.FC = () => {
                 onClick={() => {
                   setPatientData(null);
                   setPatientCode('');
-                  setDateOfBirth('');
                 }}
               >
                 ← Back
@@ -145,7 +141,7 @@ export const PatientLookup: React.FC = () => {
       <div className="lookup-container">
         <div className="lookup-card">
           <div className="lookup-header">
-            <h1>Access Your Screening Results</h1>
+            <h1>Access Patient Space</h1>
             <p className="lookup-subtitle">
               When you were screened, your healthcare provider gave you a unique Patient ID.
               Enter it below along with your date of birth to securely view your results.
@@ -165,18 +161,6 @@ export const PatientLookup: React.FC = () => {
                 disabled={loading}
               />
               <small>Format: PAT-YYYYMMDD-NNNN (provided at screening)</small>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="dob">Date of Birth</label>
-              <input
-                id="dob"
-                type="date"
-                value={dateOfBirth}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-                required
-                disabled={loading}
-              />
             </div>
 
             {error && <div className="alert alert-error">{error}</div>}

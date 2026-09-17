@@ -72,6 +72,7 @@ class Patient(Base):
     full_name = Column(String(255), nullable=False)
     date_of_birth = Column(Date, nullable=False)
     sex = Column(SQLEnum(SexEnum), nullable=False)
+    phone_number = Column(String(8), nullable=False)
     hospital_id = Column(UUID(as_uuid=True), ForeignKey('hospitals.id'), nullable=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

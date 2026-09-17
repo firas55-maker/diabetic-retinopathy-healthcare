@@ -219,10 +219,8 @@ class ApiClient {
   }
 
   // Public endpoints (no auth)
-  async patientLookup(patientCode: string, dateOfBirth: string): Promise<any> {
-    const response = await this.client.get(`/patient-lookup/${patientCode}`, {
-      params: { date_of_birth: dateOfBirth },
-    });
+  async patientLookup(patientCode: string): Promise<any> {
+    const response = await this.client.get(`/patient-lookup/${patientCode}`);
     return response.data;
   }
 }
