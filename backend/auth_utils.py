@@ -23,12 +23,16 @@ class TokenData:
         self.role = role
 
 def hash_password(password: str) -> str:
-    """Hash a password"""
+    """Hash a password using bcrypt, with SHA256 fallback for compatibility"""
     if BCRYPT_AVAILABLE and pwd_context:
         try:
             return pwd_context.hash(password)
-        except Exception:
-            pass
+        except Exception as e:
+            # Log the actual error so we know what went wrong
+            import sys
+            print(f"[WARN] bcrypt hash() failed: {type(e).__name__}: {e}", file=sys.stderr)
+            # Fall through to SHA256 only as last resort
+
     # Fallback: use SHA256 with salt (not ideal, but works when bcrypt fails)
     salt = secrets.token_hex(16)
     hashed = hashlib.sha256((salt + password).encode()).hexdigest()

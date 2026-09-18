@@ -1,7 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from database import engine
 from auth_utils import hash_password
+from dependencies import require_admin
+from models import User
 
 router = APIRouter()
 
@@ -25,7 +27,9 @@ async def migrate_hash_column():
         }
 
 @router.post("/admin/rehash-passwords")
-async def rehash_passwords():
+async def rehash_passwords(
+    current_user: User = Depends(require_admin)
+):
     """Re-hash all user passwords to fix truncated hashes"""
     try:
         with engine.begin() as conn:
