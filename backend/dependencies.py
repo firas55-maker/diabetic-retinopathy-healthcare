@@ -61,3 +61,7 @@ async def require_admin(current_user: User = Depends(require_role(RoleEnum.ADMIN
 async def require_doctor_or_admin(current_user: User = Depends(require_role(RoleEnum.DOCTOR.value, RoleEnum.ADMIN.value))) -> User:
     """Require doctor or admin role"""
     return current_user
+
+async def require_doctor_or_technical_staff(current_user: User = Depends(require_role(RoleEnum.DOCTOR.value, RoleEnum.TECHNICAL_STAFF.value))) -> User:
+    """Require doctor or technical staff role"""
+    return current_user

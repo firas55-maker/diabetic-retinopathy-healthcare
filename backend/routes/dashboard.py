@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 from uuid import UUID
 
 from models import Patient, Scan, User, ScanStatusEnum, RoleEnum
-from dependencies import require_doctor, get_current_user
+from dependencies import require_doctor, require_doctor_or_technical_staff, get_current_user
 from database import get_db
 from pydantic import BaseModel
 
@@ -82,10 +82,10 @@ def get_age_group(age: int) -> str:
 @router.get("/stats", response_model=DashboardStats)
 async def get_dashboard_stats(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_doctor)
+    current_user: User = Depends(require_doctor_or_technical_staff)
 ) -> DashboardStats:
     """
-    Get comprehensive dashboard statistics for doctor (doctor only)
+    Get comprehensive dashboard statistics (doctor or technical staff)
 
     Returns:
     - **total_patients**: Total number of patients in doctor's hospital

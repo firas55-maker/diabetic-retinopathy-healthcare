@@ -73,7 +73,9 @@ async def rehash_passwords(
         }
 
 @router.get("/admin/hospitals")
-async def get_hospitals():
+async def get_hospitals(
+    current_user: User = Depends(require_admin)
+):
     """Get list of all hospitals"""
     try:
         with engine.connect() as conn:

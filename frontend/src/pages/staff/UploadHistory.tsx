@@ -2,6 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { AppShell } from '../../components/AppShell';
 import api from '../../services/api';
 
+const formatScanDate = (dateString: string | undefined): string => {
+  if (!dateString) return 'Invalid Date';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  } catch (e) {
+    return 'Invalid Date';
+  }
+};
+
 export const UploadHistory: React.FC = () => {
   const [scans, setScans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +34,7 @@ export const UploadHistory: React.FC = () => {
     try {
       setLoading(true);
       const data = await api.getScanQueue();
-      setScans(data || []);
+      setScans(data?.scans || []);
     } catch (err: any) {
       console.error('Failed to load upload history:', err);
       setError('Unable to load upload history');
@@ -149,7 +166,7 @@ export const UploadHistory: React.FC = () => {
                     </code>
                   </td>
                   <td><strong>{scan.patient_name || 'Unknown'}</strong></td>
-                  <td>{new Date(scan.created_at).toLocaleDateString()}</td>
+                  <td>{formatScanDate(scan.created_at)}</td>
                   <td>
                     <span style={{
                       display: 'inline-block',

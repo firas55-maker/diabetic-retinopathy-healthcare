@@ -17,7 +17,7 @@ from schemas import (
     PatientWithScansResponse,
     DoctorPatientsResponse
 )
-from dependencies import require_doctor, get_current_user
+from dependencies import require_doctor, require_doctor_or_technical_staff, get_current_user
 from database import get_db
 
 router = APIRouter(prefix="/doctor", tags=["doctor"])
@@ -49,7 +49,7 @@ async def get_scan_queue(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_doctor)
+    current_user: User = Depends(require_doctor_or_technical_staff)
 ) -> ScanQueueListResponse:
     """
     Get all pending_review scans in queue (doctor only)
@@ -299,7 +299,7 @@ async def get_my_patients(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_doctor)
+    current_user: User = Depends(require_doctor_or_technical_staff)
 ) -> DoctorPatientsResponse:
     """
     Get all patients this doctor has reviewed scans for (doctor only)
